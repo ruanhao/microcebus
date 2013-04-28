@@ -1,5 +1,7 @@
 #! /bin/bash
 
+echo "Welcome to use Microcebus"
+
 VIMDIR="$HOME/.vim"
 VIMRC="$HOME/.vimrc"
 
