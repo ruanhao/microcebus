@@ -24,3 +24,5 @@ while read repo; do
     [[ "${repo:0:1}" != "#" ]] && git clone $repo
 done <$VIMDIR/repo.config
 
+echo "It rocks, pls enjoy :)"
+
