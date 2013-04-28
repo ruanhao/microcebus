@@ -7,8 +7,8 @@ VIMRC="$HOME/.vimrc"
 
 for i in $VIMDIR $VIMRC; do
     orig="${i}.orig"
-    [[ ( -e $orig ) || ( -h $orig ) ]] && echo "removing $orig"; rm -rf $orig
-    [[ ( -e $i ) || ( -h $i ) ]] && echo "renaming $i ---> $orig"; mv $i $orig
+    [[ ( -e $orig ) || ( -h $orig ) ]] && { echo "removing $orig"; rm -rf $orig }
+    [[ ( -e $i ) || ( -h $i ) ]] && { echo "renaming $i ---> $orig"; mv $i $orig }
 done
 
 git clone  git@github.com:ruanhao/Microcebus.git $VIMDIR
