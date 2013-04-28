@@ -1,6 +1,6 @@
 #! /bin/bash
 
-echo "Welcome to use Microcebus"
+echo "WELCOME TO USE MICROCEBUS !!!"
 
 VIMDIR="$HOME/.vim"
 VIMRC="$HOME/.vimrc"
