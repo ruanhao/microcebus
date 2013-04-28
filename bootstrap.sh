@@ -23,7 +23,7 @@ echo "updating VIM Scripts"
 mkdir -p $VIMDIR/bundle
 cd $VIMDIR/bundle
 while read repo; do
-    [[ ( "${repo:0:1}" != "#" ) || ( "${#repo}" != "0" ) ]] && git clone $repo
+    [[ ( "${repo:0:1}" != "#" ) && ( "${#repo}" != "0" ) ]] && git clone $repo
 done <$VIMDIR/repo.config
 
 echo "It rocks, pls enjoy :)"
