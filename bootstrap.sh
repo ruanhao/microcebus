@@ -1,34 +1,26 @@
 #! /bin/bash
 
-origVimDir="$HOME/.vim.orig"
-vimDir="$HOME/.vim"
-[[ -d "$origVimDir" ]] && echo "removing $origVimDir"; \
-                          rm -rf $origVimDir
+VIMDIR="$HOME/.vim"
+VIMRC="$HOME/.vimrc"
 
-if [[ -d "$vimDir" ]]; then
-    echo "renaming $vimDir ---> $origVimDir"
-    mv $vimDir $origVimDir
-    git clone  git@github.com:ruanhao/Microcebus.git $vimDir
-else
-    echo "creating $vimDir"
-    mkdir -p $vimDir
-    git clone  git@github.com:ruanhao/Microcebus.git $vimDir
-fi
+for i in $VIMDIR $VIMRC; do
+    orig="${i}.orig"
+    [[ -e $orig ]] && echo "removing $orig"; rm -rf $orig
+    [[ -e $i ]] && echo "renaming $i ---> $orig"; mv $i $orig
+done
+
+git clone  git@github.com:ruanhao/Microcebus.git $VIMDIR
+ln -s $VIMDIR/vimrc $VIMRC
 
 echo "updating pathogen file" 
-tmpDir=$( mktemp -d )
-git clone git@github.com:tpope/vim-pathogen.git $tmpDir > /dev/null
-cp -r $tmpDir/autoload $vimDir
+TMPDIR=$( mktemp -d )
+git clone git@github.com:tpope/vim-pathogen.git $TMPDIR
+cp -r $TMPDIR/autoload $VIMDIR
 
 echo "updating VIM Scripts"
-mkdir -p $vimDir/bundle
-cd $vimDir/bundle
+mkdir -p $VIMDIR/bundle
+cd $VIMDIR/bundle
 while read repo; do
-    git clone $repo
-done <$vimDir/repo.config
-
-
-
-
-    
+    [[ "${repo:0:1}" != "#" ]] && git clone $repo
+done <$VIMDIR/repo.config
 
