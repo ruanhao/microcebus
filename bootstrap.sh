@@ -20,6 +20,8 @@ tmpDir=$( mktemp -d )
 git clone git@github.com:tpope/vim-pathogen.git $tmpDir > /dev/null
 cp -r $tmpDir/autoload $vimDir
 
+echo "updating VIM Scripts"
+mkdir -p $vimDir/bundle
 cd $vimDir/bundle
 while read repo; do
     git clone $repo
