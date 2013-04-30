@@ -43,13 +43,13 @@ set backspace=indent,eol,start
 " Colors
 " -----------------------------------------------------------------------------
 "Enable syntax hl
-syntax on
+syntax enable
 if has('gui_running')
   set background=light
 else
   set background=dark
 endif
-colorscheme desert
+colorscheme solarized
 
 " Font
 "set guifont=Monaco:h14
