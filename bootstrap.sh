@@ -41,5 +41,8 @@ while read repo; do
     [[ ( ${repo:0:1} != "#" ) && ( ${#repo} -ne 0 ) ]] && git clone $repo
 done <$VIMDIR/repo.config
 
+find . \( -name ".git" -prune \) -o \( -type f -print \) | xargs dos2unix \ 
+|| die "can't perform dos2unix"
+
 echo "It rocks, pls enjoy :)"
 
