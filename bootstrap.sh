@@ -26,7 +26,7 @@ for i in $VIMDIR $VIMRC; do
     fi
 done
 
-git clone  git@github.com:ruanhao/Microcebus.git $VIMDIR
+git clone  git@github.com:ruanhao/microcebus.git $VIMDIR
 ln -s $VIMDIR/vimrc $VIMRC
 
 echo "updating pathogen file" 
