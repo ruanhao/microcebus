@@ -42,8 +42,8 @@ while read repo; do
 done <$VIMDIR/repo.config
 
 echo "dos2unix ... "
-find . \( -name ".git" -prune \) -o \( -type f -print \) | xargs dos2unix \ 
-|| die "can't perform dos2unix"
+find . \( -name ".git" -prune \) -o \( -type f -print \) | xargs dos2unix 2>&1 /dev/null \
+&& echo "dos2unix complete" || die "can't perform dos2unix"
 
 echo "It rocks, pls enjoy :)"
 
