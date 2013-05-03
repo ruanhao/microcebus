@@ -4,6 +4,7 @@ echo "WELCOME TO USE MICROCEBUS !!!"
 
 VIMDIR="$HOME/.vim"
 VIMRC="$HOME/.vimrc"
+REPOCFG=$VIMDIR/repo.config
 
 for i in $VIMDIR $VIMRC; do
     orig="${i}.orig"
@@ -26,20 +27,25 @@ for i in $VIMDIR $VIMRC; do
     fi
 done
 
-git clone  git@github.com:ruanhao/microcebus.git $VIMDIR
+echo "Initializing MICROCEBUS..."
+git clone  git@github.com:ruanhao/microcebus.git $VIMDIR 2> /dev/null
 ln -s $VIMDIR/vimrc $VIMRC
 
-echo "updating pathogen file" 
+echo "updating pathogen file..." 
 TMPDIR=$( mktemp -d )
-git clone git@github.com:tpope/vim-pathogen.git $TMPDIR
+git clone git@github.com:tpope/vim-pathogen.git $TMPDIR > /dev/null 2>&1
 cp -r $TMPDIR/autoload $VIMDIR
 
-echo "updating VIM Scripts"
+echo "updating VIM Scripts..."
 mkdir -p $VIMDIR/bundle
 cd $VIMDIR/bundle
+TOTALREPO=$( grep -vE '(^#|^$)' $REPOCFG | wc -l )
+cnt=1
 while read repo; do
-    [[ ( ${repo:0:1} != "#" ) && ( ${#repo} -ne 0 ) ]] && git clone $repo
-done <$VIMDIR/repo.config
+    echo -n "[$cnt/$TOTALREPO] "
+    let "cnt++"
+    [[ ( ${repo:0:1} != "#" ) && ( ${#repo} -ne 0 ) ]] && git clone $repo 2> /dev/null
+done <$REPOCFG
 
 echo "dos2unix ... "
 find $VIMDIR/bundle \( -name ".git" -prune \) -o \( -type f -print \) | xargs dos2unix > /dev/null 2>&1 \
