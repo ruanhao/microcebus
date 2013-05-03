@@ -7,7 +7,7 @@ Vundle is good, but i just want to simplify everything.
 
 ### Easy way
 
-> It is recommended, but i can't run it at my office :<
+> It is recommended, but i can't run it at my office :)
 
     $ curl https://raw.github.com/ruanhao/microcebus/master/bootstrap.sh | bash
 
