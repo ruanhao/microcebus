@@ -31,10 +31,10 @@ echo "Initializing MICROCEBUS..."
 git clone  git@github.com:ruanhao/microcebus.git $VIMDIR 2> /dev/null
 ln -s $VIMDIR/vimrc $VIMRC
 
-echo "updating pathogen file..." 
-TMPDIR=$( mktemp -d )
-git clone git@github.com:tpope/vim-pathogen.git $TMPDIR > /dev/null 2>&1
-cp -r $TMPDIR/autoload $VIMDIR
+# echo "updating pathogen file..." 
+# TMPDIR=$( mktemp -d )
+# git clone git@github.com:tpope/vim-pathogen.git $TMPDIR > /dev/null 2>&1
+# cp -r $TMPDIR/autoload $VIMDIR
 
 echo "updating VIM Scripts..."
 mkdir -p $VIMDIR/bundle
@@ -43,8 +43,7 @@ TOTALREPO=$( grep -vE '(^#|^$)' $REPOCFG | wc -l )
 cnt=1
 while read repo; do
     echo -n "[$cnt/$TOTALREPO] "
-    let "cnt++"
-    [[ ( ${repo:0:1} != "#" ) && ( ${#repo} -ne 0 ) ]] && git clone $repo 2> /dev/null
+    [[ ( ${repo:0:1} != "#" ) && ( ${#repo} -ne 0 ) ]] && git clone $repo 2> /dev/null; let "cnt++"
 done <$REPOCFG
 
 echo "dos2unix ... "
