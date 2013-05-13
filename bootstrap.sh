@@ -42,8 +42,9 @@ cd $VIMDIR/bundle
 TOTALREPO=$( grep -vE '(^#|^$)' $REPOCFG | wc -l )
 cnt=1
 while read repo; do
-    echo -n "[$cnt/$TOTALREPO] "
-    [[ ( ${repo:0:1} != "#" ) && ( ${#repo} -ne 0 ) ]] && git clone $repo 2> /dev/null; let "cnt++"
+    [[ ( ${repo:0:1} != "#" ) && ( ${#repo} -ne 0 ) ]] && echo -n "[$cnt/$TOTALREPO] "; \
+                                                          git clone $repo 2> /dev/null; \
+                                                          let "cnt++"
 done <$REPOCFG
 
 echo "dos2unix ... "
