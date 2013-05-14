@@ -43,8 +43,8 @@ TOTALREPO=$( grep -vE '(^#|^$)' $REPOCFG | wc -l )
 cnt=1
 while read repo; do
     if [[ ( ${repo:0:1} != "#" ) && ( ${#repo} -ne 0 ) ]]; then
-        echo -n "[$cnt/$TOTALREPO] ";
-        git clone $repo 2> /dev/null;
+        echo -n "[$cnt/$TOTALREPO] "
+        git clone $repo 2> /dev/null
         let "cnt++"
     fi
 done <$REPOCFG
