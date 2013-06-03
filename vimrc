@@ -10,6 +10,12 @@ execute pathogen#infect()
 " General Setup
 " -----------------------------------------------------------------------------
 
+" Set number
+set nu
+
+" Set mouse mode
+set mouse=a
+
 " Display commands in the bottom right corner as they are typed
 set showcmd
 
