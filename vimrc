@@ -107,10 +107,10 @@ set expandtab
 " -----------------------------------------------------------------------------
 
 " Always display the status line
-" set laststatus=2
+set laststatus=2
 
 " format string
-" set statusline=%1*\File:\ %*%f%1*%5m%*%=\L%-5l\ \C%-4c%5p%%\ [%L\ \lines]
+set statusline=%1*\File:\ %*%f%1*%5m%*%=\L%-5l\ \C%-4c%5p%%\ [%L\ \lines]
 
 " Show the current editing status
 set showmode
@@ -137,7 +137,7 @@ nmap <silent> tt :NERDTreeToggle<cr>
 
 " Config TagList
 nmap <silent> tl :TlistToggle<cr>
-" If the taglist window is the last window, then exit vim
+" If the Taglist window is the last window, then exit VIM
 let Tlist_Exit_OnlyWindow = 1
 let Tlist_Use_Right_Window = 1
 let Tlist_Show_One_File = 1
