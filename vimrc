@@ -47,7 +47,9 @@ set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 set nobomb
 
 " Set foldmethod
-set foldmethod=marker
+set foldmethod=syntax
+" Set no folding initially, but can be activated when hit 'zm' or something
+set nofoldenable
 
 " Set backspace to delete
 set backspace=indent,eol,start
@@ -135,12 +137,16 @@ nmap <silent> <C-P> :tabprevious<CR>
 " Config the NERDTree
 nmap <silent> tt :NERDTreeToggle<cr>
 
-" Config TagList
-nmap <silent> tl :TlistToggle<cr>
+" Config TagList ( I don't like it actually )
+"nmap <silent> tl :TlistToggle<cr>
 " If the Taglist window is the last window, then exit VIM
-let Tlist_Exit_OnlyWindow = 1
-let Tlist_Use_Right_Window = 1
-let Tlist_Show_One_File = 1
+"let Tlist_Exit_OnlyWindow = 1
+"let Tlist_Use_Right_Window = 1
+"let Tlist_Show_One_File = 1
 
-" Config Powerline
-" let g:Powerline_symbols = 'unicode'
+" Config vimerl
+let g:erlangHighlightBif = 1
+let g:erlangCheckFile = "~/.vim/bundle/vimerl/compiler/erlang_check_file.erl"
+let g:erlangFoldSplitFunction=1
+" Maybe ManPath should be changed accordingly
+let g:erlangManPath="/usr/lib/erlang/man"
