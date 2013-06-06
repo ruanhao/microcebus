@@ -145,8 +145,8 @@ nmap <silent> tt :NERDTreeToggle<cr>
 "let Tlist_Show_One_File = 1
 
 " Config vimerl
-let g:erlangHighlightBif = 1
-let g:erlangCheckFile = "~/.vim/bundle/vimerl/compiler/erlang_check_file.erl"
+let g:erlangHighlightBif=1
+let g:erlangCheckFile="~/.vim/bundle/vimerl/compiler/erlang_check_file.erl"
 "let g:erlangFoldSplitFunction=1
 " Maybe ManPath should be changed accordingly
 let g:erlangManPath="/usr/lib/erlang/man"
