@@ -7,22 +7,66 @@ use Cwd 'abs_path';
 ## Created: 2013.06.12
 
 
-my $HOME   = $ENV{HOME};
-my $VIMDIR = "$HOME/.vim";
-my $VIMRC  = "$HOME/.vimrc";
-my $REPO   = "https://github.com/ruanhao/microcebus.git";
+my $HOME        = $ENV{HOME};
+my $VIMDIR      = "$HOME/.vim";
+my $VIMRC       = "$HOME/.vimrc";
+my $REPO        = "https://github.com/ruanhao/microcebus.git";
+my $GITCONFIG   = "$HOME/.vim/gitshorts";
+my $SHELLCONFIG = "$HOME/.vim/shellconfig";
 
 print_logo();
 remove_orig($HOME);
 backup_file($HOME);
 git_clone($VIMDIR, $VIMRC);
 initialize_repo($VIMDIR);
+initialize_gitshorts($GITCONFIG);
+initialize_shellconfig($SHELLCONFIG);
 finalization();
 
+sub initialize_shellconfig {
+    my ($SHELLCONFIG) = @_;
+    my $shell         = $ENV{SHELL};
+    my $rcfile        = '';
+    {
+        $shell =~ /bash/ && do { 
+            $rcfile = "$HOME/.bashrc";
+            last
+        };
+        $shell =~ /zsh/  && do {
+            $rcfile = "$HOME/.zshrc";
+            last
+        };
+        last;
+    }
+    if ( $rcfile ) {
+        print "initializing shell configuration "; 
+        qx/ grep -q 'microcebus' $rcfile /;
+        qx/ cat $SHELLCONFIG >> $rcfile / if $?;
+        (not $?) ? do { print "--- ok \n" } : do { print "--- fail \n" };
+    } else {
+        print "only support bash and zsh now \n";
+    }
+}
 
-
+sub initialize_gitshorts {
+    my ($GITCONFIG) = @_;
+    print "initializing git shorts "; 
+    qx{ grep -q 'microcebus' $HOME/.gitconfig };
+    qx{ cat $GITCONFIG >> $HOME/.gitconfig } if $?;
+    (not $?) ? do { print "--- ok \n" } : do { print "--- fail \n" };
+}
 
 sub finalization {
+    my $cleanupdir = "$HOME/.vim";
+    my @cleanupds  = glob "$cleanupdir/.git $cleanupdir/bundle/*/.git";
+    my @cleanupfs  = glob "$cleanupdir/shellconfig $cleanupdir/gitshorts $cleanupdir/*.md 
+                           $cleanupdir/*.pl $cleanupdir/repo.config";
+    for ( @cleanupds ) {
+        qx/ rm -rf $_ /;
+    }
+    for ( @cleanupfs ) {
+        qx/ rm -f $_ /;
+    }
     print "microcebus installation done \n";
 }
 
