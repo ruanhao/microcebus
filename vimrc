@@ -10,6 +10,13 @@ execute pathogen#infect()
 " General Setup
 " -----------------------------------------------------------------------------
 
+" Set tab completion mode
+set wildmenu
+set wildmode=full
+
+" Set history
+set history=200
+
 " Set number
 set nu
 
@@ -53,6 +60,10 @@ set nofoldenable
 
 " Set backspace to delete
 set backspace=indent,eol,start
+
+" Avoid the cursor keys
+cnoremap <C-p> <Up>
+cnoremap <C-n> <Down>
 
 " Colors
 " -----------------------------------------------------------------------------
@@ -150,3 +161,9 @@ let g:erlangCheckFile="~/.vim/bundle/vimerl/compiler/erlang_check_file.erl"
 "let g:erlangFoldSplitFunction=1
 " Maybe ManPath should be changed accordingly
 let g:erlangManPath="/usr/lib/erlang/man"
+
+" Create mappings to quickly traverse Vim's lists
+nnoremap <silent> [b :bprevious<CR>
+nnoremap <silent> ]b :bnext<CR>
+nnoremap <silent> [B :bfirst<CR>
+nnoremap <silent> ]B :blast<CR>
