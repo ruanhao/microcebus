@@ -57,6 +57,7 @@ sub initialize_gitshorts {
 }
 
 sub finalization {
+    print "clean up $HOME/.vim \n";
     my $cleanupdir = "$HOME/.vim";
     my @cleanupds  = glob "$cleanupdir/.git $cleanupdir/bundle/*/.git";
     my @cleanupfs  = glob "$cleanupdir/shellconfig $cleanupdir/gitshorts $cleanupdir/*.md 
@@ -105,7 +106,15 @@ sub git_clone {
 }
 
 sub print_logo {
-    print "microcebus\n";
+    print "\n";
+    print " =======================================================================================================\n";
+    print "     _/       _/  _/_/_/   _/_/_/  _/_/_/_/   _/_/_/_/   _/_/_/   _/_/_/_/  _/_/_/_/  _/    _/    _/_/_/ \n";
+    print "    _/_/   _/_/    _/   _/        _/    _/   _/    _/  _/        _/        _/    _/  _/    _/  _/        \n";
+    print "   _/ _/ _/ _/    _/   _/        _/_/_/_/   _/    _/  _/        _/_/_/_/  _/_/_/_/  _/    _/    _/_/     \n";
+    print "  _/   _/  _/    _/   _/        _/   _/    _/    _/  _/        _/        _/    _/  _/    _/        _/    \n";
+    print " _/       _/  _/_/_/   _/_/_/  _/     _/  _/_/_/_/    _/_/_/  _/_/_/_/  _/_/_/_/  _/_/_/_/  _/_/_/       \n";
+    print " =======================================================================================================\n";
+    print "\n";
 }
 
 sub remove_orig {
