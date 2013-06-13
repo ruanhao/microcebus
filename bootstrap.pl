@@ -30,8 +30,8 @@ sub initialize_repo {
     my ($VIMDIR) = @_;
     qx{ mkdir $VIMDIR/bundle };
     my $total = `cat $VIMDIR/repo.config | egrep '^[[:space:]]*[^#]' | wc -l`;
+    $total    =~ s/^\s+|\s+$//g;
     my $i     = 1;
-    chomp($total);
     open REPO, "$VIMDIR/repo.config";
     while ( <REPO> ) {
         chomp($_);
