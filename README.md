@@ -1,9 +1,8 @@
 # Microcebus
 
-Microcebus is a VIM setup script. 
-Vundle is good, but i just want to simplify everything.
+Microcebus is my workspace environment setup script. 
 
 ## Installation
 
-    $ curl https://raw.github.com/ruanhao/microcebus/master/bootstrap.sh | bash
+    $ curl https://raw.github.com/ruanhao/microcebus/master/bootstrap.pl | perl
     
