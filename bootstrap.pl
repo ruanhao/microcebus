@@ -74,7 +74,8 @@ sub finalization {
 sub initialize_repo {
     my ($VIMDIR) = @_;
     qx{ mkdir $VIMDIR/bundle };
-    my $total = `cat $VIMDIR/repo.config | egrep '^[[:space:]]*[^#]' | wc -l`;
+    ( -e "$VIMDIR/repo.config" ) ? my $total = `cat $VIMDIR/repo.config | egrep '^[[:space:]]*[^#]' | wc -l` : 
+                                   do { print "$VIMDIR/repo.config not found, installation aborted \n"; exit 10 };
     $total    =~ s/^\s+|\s+$//g;
     my $i     = 1;
     open REPO, "$VIMDIR/repo.config";
