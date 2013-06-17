@@ -61,10 +61,6 @@ set nofoldenable
 " Set backspace to delete
 set backspace=indent,eol,start
 
-" Avoid the cursor keys
-cnoremap <C-p> <Up>
-cnoremap <C-n> <Down>
-
 " Colors
 " -----------------------------------------------------------------------------
 
@@ -78,7 +74,7 @@ set background=dark
 colorscheme molokai
 
 " Font
-set guifont=Consolas:h14:cANSI
+"set guifont=Consolas:h14:cANSI
 
 " Search
 " -----------------------------------------------------------------------------
@@ -138,7 +134,7 @@ nmap <C-H> <C-W>h
 nmap <C-L> <C-W>l
 
 " Table utilities
-nmap <silent> <C-C> :tabnew <CR>
+"nmap <silent> <C-C> :tabnew <CR>
 nmap <silent> <C-N> :tabnext<CR>
 nmap <silent> <C-P> :tabprevious<CR>
 
@@ -167,3 +163,8 @@ nnoremap <silent> [b :bprevious<CR>
 nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
+
+" Avoid the cursor keys
+cnoremap <C-p> <Up>
+cnoremap <C-n> <Down>
+
