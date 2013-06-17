@@ -61,6 +61,9 @@ set nofoldenable
 " Set backspace to delete
 set backspace=indent,eol,start
 
+" Set paste toggle
+set pastetoggle=<f11>
+
 " Colors
 " -----------------------------------------------------------------------------
 
@@ -94,6 +97,10 @@ set smartcase
 
 " Wrap search when EOF is reached
 set wrapscan
+
+" Set max text width when wrap
+set wrap
+set textwidth=80
 
 " Indenting and Tabbing
 " -----------------------------------------------------------------------------
@@ -168,3 +175,9 @@ nnoremap <silent> ]B :blast<CR>
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
 
+"noremap <Leader>n nzz
+"noremap <Leader>N Nzz
+
+" Config Ctag
+"nnoremap <f5> :!ctags -R<CR>
+"autocmd BufWritePost * call system("ctags -R")
