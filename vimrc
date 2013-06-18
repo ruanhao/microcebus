@@ -135,24 +135,25 @@ set showmode
 " -----------------------------------------------------------------------------
 
 " Window switch
-nmap <C-J> <C-W>j
-nmap <C-K> <C-W>k
-nmap <C-H> <C-W>h
-nmap <C-L> <C-W>l
+" We should always use noremap
+nnoremap <C-J> <C-W>j
+nnoremap <C-K> <C-W>k
+nnoremap <C-H> <C-W>h
+nnoremap <C-L> <C-W>l
 
 " Table utilities
-"nmap <silent> <C-C> :tabnew <CR>
-nmap <silent> <C-N> :tabnext<CR>
-nmap <silent> <C-P> :tabprevious<CR>
+"nnoremap <silent> <C-C> :tabnew <CR>
+nnoremap <silent> <C-N> :tabnext<CR>
+nnoremap <silent> <C-P> :tabprevious<CR>
 
 " Plugin settings
 " -----------------------------------------------------------------------------
 
 " Config the NERDTree
-nmap <silent> tt :NERDTreeToggle<cr>
+nnoremap <silent> tt :NERDTreeToggle<cr>
 
 " Config TagList ( I don't like it actually )
-"nmap <silent> tl :TlistToggle<cr>
+"nnoremap <silent> tl :TlistToggle<cr>
 " If the Taglist window is the last window, then exit VIM
 "let Tlist_Exit_OnlyWindow = 1
 "let Tlist_Use_Right_Window = 1
