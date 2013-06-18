@@ -1,7 +1,7 @@
 " File    : vimrc
-" Modifier: Hao
-" Purpose : VIM configuration file
-" Modified: 2013.6.3
+" Creator : Hao Ruan
+" Purpose : VIM Configuration File
+" Created : 2013.6.3
 " Ref     : http://edyfox.codecarver.org/html/_vimrc_for_beginners.html
 
 " Pathogen Startup
@@ -9,6 +9,9 @@ execute pathogen#infect()
 
 " General Setup
 " -----------------------------------------------------------------------------
+
+" Do not use VI mode
+set nocompatible
 
 " Set tab completion mode
 set wildmenu
@@ -25,9 +28,6 @@ set mouse=a
 
 " Display commands in the bottom right corner as they are typed
 set showcmd
-
-" Do not use VI mode
-set nocompatible
 
 " Disable backup file
 set nobackup
@@ -63,6 +63,9 @@ set backspace=indent,eol,start
 
 " Set paste toggle
 set pastetoggle=<f11>
+
+" Set hidden to freely switch buffers
+set hidden
 
 " Colors
 " -----------------------------------------------------------------------------
@@ -100,7 +103,7 @@ set wrapscan
 
 " Set max text width when wrap
 set wrap
-set textwidth=80
+set textwidth=100
 
 " Indenting and Tabbing
 " -----------------------------------------------------------------------------
@@ -150,21 +153,21 @@ nnoremap <silent> <C-P> :tabprevious<CR>
 " -----------------------------------------------------------------------------
 
 " Config the NERDTree
-nnoremap <silent> tt :NERDTreeToggle<cr>
+nnoremap <silent> tt :NERDTreeToggle<CR>
 
 " Config TagList ( I don't like it actually )
-"nnoremap <silent> tl :TlistToggle<cr>
+nnoremap <silent> tl :TlistToggle<CR>
 " If the Taglist window is the last window, then exit VIM
-"let Tlist_Exit_OnlyWindow = 1
-"let Tlist_Use_Right_Window = 1
-"let Tlist_Show_One_File = 1
+let Tlist_Exit_OnlyWindow  = 1
+let Tlist_Use_Right_Window = 1
+let Tlist_Show_One_File    = 1
 
 " Config vimerl
-let g:erlangHighlightBif=1
-let g:erlangCheckFile="~/.vim/bundle/vimerl/compiler/erlang_check_file.erl"
+let g:erlangHighlightBif = 1
+let g:erlangCheckFile    = "~/.vim/bundle/vimerl/compiler/erlang_check_file.erl"
 "let g:erlangFoldSplitFunction=1
 " Maybe ManPath should be changed accordingly
-let g:erlangManPath="/usr/lib/erlang/man"
+let g:erlangManPath      = "/usr/lib/erlang/man"
 
 " Create mappings to quickly traverse Vim's lists
 nnoremap <silent> [b :bprevious<CR>
@@ -176,9 +179,20 @@ nnoremap <silent> ]B :blast<CR>
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
 
-"noremap <Leader>n nzz
-"noremap <Leader>N Nzz
-
 " Config Ctag
 "nnoremap <f5> :!ctags -R<CR>
-"autocmd BufWritePost * call system("ctags -R")
+"augroup ctags
+"    autocmd!
+"    autocmd BuffWritePost * call system("ctags -R")
+"augroup END
+
+" Config filetype detect
+augroup filetype_detect
+    autocmd!
+    autocmd FileType erlang nnoremap <silent> <buffer> <Leader>c I%% <ESC>
+    autocmd FileType erlang nnoremap <silent> <buffer> <Leader><Leader>c :s/\v^\s*\sz%%//<ESC>
+    autocmd FileType ruby   nnoremap <silent> <buffer> <Leader>c I## <ESC>
+    autocmd FileType ruby   nnoremap <silent> <buffer> <Leader><Leader>c :s/\v^\s*\sz##//<ESC>
+    autocmd FileType perl   nnoremap <silent> <buffer> <Leader>c I## <ESC>
+    autocmd FileType perl   nnoremap <silent> <buffer> <Leader><Leader>c :s/\v^\s*\sz##//<ESC>
+augroup END
