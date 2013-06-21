@@ -186,6 +186,21 @@ cnoremap <C-n> <Down>
 "    autocmd BuffWritePost * call system("ctags -R")
 "augroup END
 
+" It is easy to use SSH tool when pasting around
+let g:toggleMouse = 0 
+function ToggleMouse()
+    if g:toggleMouse == 0
+        set nonu
+        set mouse=
+        let g:toggleMouse = 1 
+    else
+        set nu
+        set mouse=a
+        let g:toggleMouse = 0 
+    endif
+endfunction
+nnoremap <silent> <F8> :call ToggleMouse()<CR>
+
 " Config filetype detect
 augroup filetype_detect
     autocmd!
