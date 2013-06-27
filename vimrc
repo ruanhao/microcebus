@@ -73,11 +73,11 @@ set hidden
 " Enable syntax
 syntax enable
 
-" I like dark background
-set background=dark
-
 " Molokai is good
 colorscheme molokai
+
+" I like dark background
+set background=dark
 
 " Font
 "set guifont=Consolas:h14:cANSI
@@ -215,3 +215,6 @@ augroup END
 " Config vim-ruby
 let g:rubycomplete_buffer_loading    = 1
 let g:rubycomplete_classes_in_global = 1
+
+" Config solarized
+let g:solarized_termcolors=256
