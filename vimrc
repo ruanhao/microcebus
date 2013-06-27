@@ -199,7 +199,7 @@ function ToggleMouse()
         let g:toggleMouse = 0 
     endif
 endfunction
-nnoremap <silent> <F8> :call ToggleMouse()<CR>
+nnoremap <silent> <F6> :call ToggleMouse()<CR>
 
 " Config filetype detect
 augroup filetype_detect
@@ -211,3 +211,7 @@ augroup filetype_detect
     autocmd FileType perl   nnoremap <silent> <buffer> <Leader>c I## <ESC>
     autocmd FileType perl   nnoremap <silent> <buffer> <Leader><Leader>c :s/\v^\s*\sz##//<ESC>
 augroup END
+
+" Config vim-ruby
+let g:rubycomplete_buffer_loading    = 1
+let g:rubycomplete_classes_in_global = 1
