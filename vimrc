@@ -215,6 +215,3 @@ augroup END
 " Config vim-ruby
 let g:rubycomplete_buffer_loading    = 1
 let g:rubycomplete_classes_in_global = 1
-
-" Config solarized
-let g:solarized_termcolors=256
