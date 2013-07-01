@@ -73,11 +73,11 @@ set hidden
 " Enable syntax
 syntax enable
 
-" Molokai is good
-colorscheme molokai
-
 " I like dark background
 set background=dark
+
+" Molokai is good
+colorscheme molokai
 
 " Font
 "set guifont=Consolas:h14:cANSI
