@@ -146,8 +146,8 @@ nnoremap <C-L> <C-W>l
 
 " Table utilities
 "nnoremap <silent> <C-C> :tabnew <CR>
-nnoremap <silent> <C-N> :tabnext<CR>
-nnoremap <silent> <C-P> :tabprevious<CR>
+"nnoremap <silent> <C-N> :tabnext<CR>
+"nnoremap <silent> <C-P> :tabprevious<CR>
 
 " Plugin settings
 " -----------------------------------------------------------------------------
