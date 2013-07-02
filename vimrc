@@ -67,6 +67,9 @@ set pastetoggle=<f11>
 " Set hidden to freely switch buffers
 set hidden
 
+" Do not clear screen when Vim exit
+set t_ti= t_te=
+
 " Colors
 " -----------------------------------------------------------------------------
 
