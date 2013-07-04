@@ -178,12 +178,15 @@ nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
 
+" Change pwd dynamically
+autocmd BufEnter * silent! lcd %:p:h
+
 " Avoid the cursor keys
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
 
 " Config Ctag
-"nnoremap <f5> :!ctags -R<CR>
+nnoremap <f5> :!ctags -R &<CR>
 "augroup ctags
 "    autocmd!
 "    autocmd BuffWritePost * call system("ctags -R")
