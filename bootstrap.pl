@@ -11,6 +11,7 @@ my $HOME        = $ENV{HOME};
 my $VIMDIR      = "$HOME/.vim";
 my $VIMRC       = "$HOME/.vimrc";
 my $REPO        = "https://github.com/ruanhao/microcebus.git";
+my $AUTOLOAD    = "$VIMDIR/autoload/pathogen.vim";
 my $GITCONFIG   = "$HOME/.vim/gitshorts";
 my $SHELLCONFIG = "$HOME/.vim/shellconfig";
 
@@ -18,10 +19,19 @@ print_logo();
 remove_orig($HOME);
 backup_file($HOME);
 git_clone($VIMDIR, $VIMRC);
+initialize_autoload($AUTOLOAD);
 initialize_repo($VIMDIR);
 initialize_gitshorts($GITCONFIG);
 initialize_shellconfig($SHELLCONFIG);
 finalization();
+
+sub initialize_autoload {
+    my ($AUTOLOAD) = @_;
+    do {
+        print "downloading pathogen.vim \n";
+        qx{ curl --silent -o $AUTOLOAD https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim };
+    } unless ( -e $AUTOLOAD );
+}
 
 sub initialize_shellconfig {
     my ($SHELLCONFIG) = @_;
