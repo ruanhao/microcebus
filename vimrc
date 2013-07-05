@@ -82,6 +82,11 @@ set background=dark
 " Molokai is good
 colorscheme molokai
 
+" Set colorcolumn
+if exists("+colorcolumn")
+    set cc=100
+endif
+
 " Font
 "set guifont=Consolas:h14:cANSI
 

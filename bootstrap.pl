@@ -7,13 +7,15 @@ use Cwd 'abs_path';
 ## Created: 2013.06.12
 
 
-my $HOME        = $ENV{HOME};
-my $VIMDIR      = "$HOME/.vim";
-my $VIMRC       = "$HOME/.vimrc";
-my $REPO        = "https://github.com/ruanhao/microcebus.git";
-my $AUTOLOAD    = "$VIMDIR/autoload/pathogen.vim";
-my $GITCONFIG   = "$HOME/.vim/gitshorts";
-my $SHELLCONFIG = "$HOME/.vim/shellconfig";
+my $HOME           = $ENV{HOME};
+my $VIMDIR         = "$HOME/.vim";
+my $VIMRC          = "$HOME/.vimrc";
+my $REPO           = "https://github.com/ruanhao/microcebus.git";
+my $AUTOLOAD       = "$VIMDIR/autoload/pathogen.vim";
+my $GITCONFIG      = "$HOME/.vim/gitshorts";
+my $SHELLCONFIG    = "$HOME/.vim/shellconfig";
+my $PATHOGEN_SSH   = "git\@github.com:tpope/vim-pathogen.git";
+my $PATHOGEN_HTTPS = "https://githubs.com/tpope/vim-pathogen.git";
 
 print_logo();
 remove_orig($HOME);
@@ -25,11 +27,22 @@ initialize_gitshorts($GITCONFIG);
 initialize_shellconfig($SHELLCONFIG);
 finalization();
 
+sub mk_tmp_dir {
+    my $epoch  = time;
+    my $tmpdir = "/tmp/vim-pathogen.$epoch";
+    qx/ mkdir -p $tmpdir /;
+    return $tmpdir;
+}
+
 sub initialize_autoload {
     my ($AUTOLOAD) = @_;
     do {
-        print "downloading pathogen.vim \n";
-        qx{ curl --silent -o $AUTOLOAD https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim };
+        print "initializing pathogen.vim \n";
+        my $pathogen_dir = mk_tmp_dir;
+        qx{ git clone $PATHOGEN_HTTPS $pathogen_dir 2> /dev/null };
+        qx{ git clone $PATHOGEN_SSH $pathogen_dir 2> /dev/null } if $?;
+        die "can not clone pathogen" if $?;
+        qx{ cp -r $pathogen_dir/* $VIMDIR }; 
     } unless ( -e $AUTOLOAD );
 }
 
@@ -71,7 +84,7 @@ sub finalization {
     my $cleanupdir = "$HOME/.vim";
     my @cleanupds  = glob "$cleanupdir/.git $cleanupdir/bundle/*/.git";
     my @cleanupfs  = glob "$cleanupdir/shellconfig $cleanupdir/gitshorts $cleanupdir/*.md 
-                           $cleanupdir/*.pl $cleanupdir/repo.config";
+                           $cleanupdir/*.pl $cleanupdir/repo.config $cleanupdir/*.markdown";
     for ( @cleanupds ) {
         qx/ rm -rf $_ /;
     }
