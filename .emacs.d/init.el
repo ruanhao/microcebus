@@ -19,14 +19,14 @@
 ;; Add line number
 (require 'linum)
 (global-linum-mode t)
-(add-hook 'linum-before-numbering-hook (lambda ()
-				(setq-default linum-format
-					      (concat "%" 
-						      (number-to-string 
-						       (length (number-to-string 
-								(count-lines 
-								 (point-min) (point-max)))))
-						      "d "))))
+(add-hook 'linum-before-numbering-hook 
+	  (lambda ()
+	    (setq-default linum-format
+			  (concat "%" 
+				  (number-to-string 
+				   (length (number-to-string 
+					    (count-lines (point-min) (point-max))))) 
+				  "d "))))
 
 ;; yes or no
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -76,10 +76,8 @@
 (setq scroll-step 1)
 (setq scroll-conservatively 9999)
 
-;; use C-x w h to highlight and 
-;; C-x w r to unhighlight
+;; enable hi-lock-mode
 (global-hi-lock-mode 1)
-
 
 ;; just for fun
 (defun show-system-type ()
@@ -97,27 +95,43 @@
   (interactive)
   (message "%S" features))
 
+;; internal function
+(defun pick-current-regexp-word ()
+  "pick current word under cursor"
+  (save-excursion
+    (let (head-point tail-point word)
+      (skip-chars-forward "-_A-Za-z0-9")
+      (setq tail-point (point))
+      (skip-chars-backward "-_A-Za-z0-9")
+      (setq head-point (point))
+      (setq word (buffer-substring-no-properties head-point tail-point))
+      (concat "\\b" word "\\b"))))
+
 (defun highlight-current-word ()
   "highlight the word under cursor"
   (interactive)
-  (let (head-point tail-point word)
-    (skip-chars-forward "-_A-Za-z0-9")
-    (setq tail-point (point))
-    (skip-chars-backward "-_A-Za-z0-9")
-    (setq head-point (point))
-    (setq word (buffer-substring-no-properties head-point tail-point))
-    (highlight-regexp word 'hi-yellow)))
+  (let (regexp-word color hi-colors)
+    (setq regexp-word (pick-current-regexp-word))
+    (add-to-list 'search-ring regexp-word)
+    ;; only 4 highlight colors supported
+    (setq hi-colors '("hi-yellow" "hi-pink" "hi-green" "hi-blue"))
+    (random t)
+    (setq color 
+	  (nth (random (length hi-colors)) hi-colors))
+    (message "%s" color)
+    (highlight-regexp regexp-word color)))
+(global-set-key [f3] 'highlight-current-word)
+
+(defun unhighlight-all ()
+  "unhighlight all highlighted words"
+  (interactive)
+  (mapc (lambda (regex) (unhighlight-regexp regex))
+	(append regexp-history search-ring)))
 
 (defun unhighlight-current-word ()
   "unhighlight the word under cursor"
   (interactive)
-  (let (head-point tail-point word)
-  (skip-chars-forward "-_A-Za-z0-9")
-  (setq tail-point (point))
-  (skip-chars-backward "-_A-Za-z0-9")
-  (setq head-point (point))
-  (setq word (buffer-substring-no-properties head-point tail-point))
-  (unhighlight-regexp word)))
+  (unhighlight-regexp (pick-current-regexp-word)))
 
 
 
@@ -182,3 +196,4 @@
 ;; ;; get filename's suffix
 ;; (file-name-extension file-name)
 ;; (file-name-sans-extension file-name)
+
