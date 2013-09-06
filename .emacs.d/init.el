@@ -19,13 +19,14 @@
 ;; Add line number
 (require 'linum)
 (global-linum-mode t)
-(setq-default linum-format
-	      (concat "%" 
-		      (number-to-string 
-		       (length (number-to-string 
-				(count-lines 
-				 (point-min) (point-max)))))
-		      "d "))
+(add-hook 'linum-before-numbering-hook (lambda ()
+				(setq-default linum-format
+					      (concat "%" 
+						      (number-to-string 
+						       (length (number-to-string 
+								(count-lines 
+								 (point-min) (point-max)))))
+						      "d "))))
 
 ;; yes or no
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -40,6 +41,11 @@
 (require 'saveplace)
 (setq save-place t)
 
+(add-hook 'emacs-startup-hook
+	  (lambda ()
+	    (modify-syntax-entry ?- "w")
+	    (modify-syntax-entry ?_ "w")))
+
 ;; Emacs Erlang mode setup
 (add-to-list 'load-path
 	     (car (file-expand-wildcards "/usr/local/lib/erlang/lib/tools-*/emacs")))
@@ -51,8 +57,7 @@
           (lambda ()
             (erlang-font-lock-level-3)
             ;; when starting an Erlang shell in Emacs, default in the node name
-            (setq inferior-erlang-machine-options '("-sname" "distel" "-setcookie" "distel_cookie"))
-            (modify-syntax-entry ?_ "w")))
+            (setq inferior-erlang-machine-options '("-sname" "distel" "-setcookie" "distel_cookie"))))
 (add-to-list 'auto-mode-alist '("\\.\\(erl\\|hrl\\|app\\|app.src\\)" . erlang-mode))
 
 ;; distel setup (Emacs Erlang IDE)
@@ -102,7 +107,6 @@
     (setq head-point (point))
     (setq word (buffer-substring-no-properties head-point tail-point))
     (highlight-regexp word 'hi-yellow)))
-
 
 (defun unhighlight-current-word ()
   "unhighlight the word under cursor"
