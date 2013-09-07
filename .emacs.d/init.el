@@ -5,8 +5,11 @@
 (define-key key-translation-map [?\C-h] [?\C-?])
 
 ;; molokai theme
-(add-to-list 'load-path "~/.emacs.d/themes/")
-(load-theme 'molokai)
+;; (add-to-list 'load-path "~/.emacs.d/themes/")
+;; (require 'molokai-theme)
+
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(load-theme 'molokai t)
 
 ;; prevent Emacs from making backup files
 (setq backup-inhibited t)
@@ -41,30 +44,33 @@
 (require 'saveplace)
 (setq save-place t)
 
-(add-hook 'emacs-startup-hook
+(add-hook 'emacs-lisp-mode-hook
 	  (lambda ()
-	    (modify-syntax-entry ?- "w")
-	    (modify-syntax-entry ?_ "w")))
+	    (modify-syntax-entry ?- "w")))
 
 ;; Emacs Erlang mode setup
+;; specify otp-path first
+(setq otp-path "/Users/ruan/Library/Erlang/otp16b01")
 (add-to-list 'load-path
-	     (car (file-expand-wildcards "/usr/local/lib/erlang/lib/tools-*/emacs")))
-(setq erlang-root-dir "/usr/local/lib/erlang")
-(setq exec-path (cons "/usr/local/lib/erlang/bin" exec-path))
+	     (car (file-expand-wildcards (concat otp-path "/lib/erlang/lib/tools-*/emacs"))))
+(setq erlang-root-dir (concat otp-path "/lib/erlang"))
+(add-to-list 'exec-path (concat otp-path "/lib/erlang/bin"))
 (require 'erlang-start)
 (add-hook 'erlang-mode-hook 'erlang-font-lock-level-3)
 (add-hook 'erlang-mode-hook 
           (lambda ()
             (erlang-font-lock-level-3)
+	    (modify-syntax-entry ?_ "w")
             ;; when starting an Erlang shell in Emacs, default in the node name
-            (setq inferior-erlang-machine-options '("-sname" "distel" "-setcookie" "distel_cookie"))))
+            (setq inferior-erlang-machine-options '("-sname" "emacs" "-setcookie" "emacs"))))
 (add-to-list 'auto-mode-alist '("\\.\\(erl\\|hrl\\|app\\|app.src\\)" . erlang-mode))
+
 
 ;; distel setup (Emacs Erlang IDE)
 (add-to-list 'load-path "~/.emacs.d/bundle/distel/elisp")
 (require 'distel)
 (distel-setup)
-(setq derl-cookie "distel_cookie")
+(setq derl-cookie "emacs")
 
 ;; parenthesis pair utilities
 (show-paren-mode t)
@@ -77,7 +83,7 @@
 (setq scroll-conservatively 9999)
 
 ;; enable hi-lock-mode
-(global-hi-lock-mode 1)
+;; (global-hi-lock-mode 1)
 
 ;; just for fun
 (defun show-system-type ()
@@ -111,30 +117,33 @@
   "highlight the word under cursor"
   (interactive)
   (let (regexp-word color hi-colors)
+    (unless (boundp 'highlight-current-word)
+      (setq highlight-current-word 0))
     (setq regexp-word (pick-current-regexp-word))
-    (add-to-list 'search-ring regexp-word)
+    (unhighlight-regexp regexp-word)
+    (add-to-list 'regexp-search-ring regexp-word)
     ;; only 4 highlight colors supported
     (setq hi-colors '("hi-yellow" "hi-pink" "hi-green" "hi-blue"))
-    (random t)
     (setq color 
-	  (nth (random (length hi-colors)) hi-colors))
-    (message "%s" color)
-    (highlight-regexp regexp-word color)))
+	  (nth (% highlight-current-word (length hi-colors)) hi-colors))
+    (highlight-regexp regexp-word color)
+    (setq highlight-current-word (1+ highlight-current-word))))
 (global-set-key [f3] 'highlight-current-word)
 
 (defun unhighlight-all ()
   "unhighlight all highlighted words"
   (interactive)
-  (mapc (lambda (regex) (unhighlight-regexp regex))
-	(append regexp-history search-ring)))
+  ;; in case of a lot of overlays
+  (dotimes (i 10)
+    (mapc (lambda (regex) (unhighlight-regexp regex))
+	(append regexp-history regexp-search-ring))))
 
 (defun unhighlight-current-word ()
   "unhighlight the word under cursor"
+  ;; in case of a lot of overlays
   (interactive)
-  (unhighlight-regexp (pick-current-regexp-word)))
-
-
-
+  (dotimes (i 10)
+    (unhighlight-regexp (pick-current-regexp-word))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; useful functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; (point)
