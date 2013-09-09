@@ -22,14 +22,11 @@
 ;; Add line number
 (require 'linum)
 (global-linum-mode t)
-(add-hook 'linum-before-numbering-hook 
-	  (lambda ()
-	    (setq-default linum-format
-			  (concat "%" 
-				  (number-to-string 
-				   (length (number-to-string 
-					    (count-lines (point-min) (point-max))))) 
-				  "d "))))
+(defadvice linum-update-window (around linum-format-dynamic activate)
+  (let* ((w (length (number-to-string
+                     (count-lines (point-min) (point-max)))))
+         (linum-format (concat "%" (number-to-string w) "d ")))
+    ad-do-it))
 
 ;; yes or no
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -145,6 +142,13 @@
   (dotimes (i 10)
     (unhighlight-regexp (pick-current-regexp-word))))
 
+(defun buffer-menu-friendly ()
+  "show buffer menu friendly"
+  (interactive)
+  (split-window-horizontally)
+  (windmove-right)
+  (buffer-menu))
+(global-set-key (kbd "\C-x \C-b") 'buffer-menu-friendly)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; useful functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; (point)
 ;; (region-beginning)
