@@ -19,7 +19,7 @@
 (line-number-mode t)
 (column-number-mode t)
 
-;; Add line number
+;; add line number
 (require 'linum)
 (global-linum-mode t)
 (defadvice linum-update-window (around linum-format-dynamic activate)
@@ -99,33 +99,35 @@
   (message "%S" features))
 
 ;; internal function
-(defun pick-current-regexp-word ()
-  "pick current word under cursor"
+(defun regexp-word-at-point ()
+  "pick current regexp word at point"
   (save-excursion
-    (let (head-point tail-point word)
-      (skip-chars-forward "-_A-Za-z0-9")
+    (let (head-point tail-point word (skip-chars "-_A-Za-z0-9"))
+      (skip-chars-forward skip-chars)
       (setq tail-point (point))
-      (skip-chars-backward "-_A-Za-z0-9")
+      (skip-chars-backward skip-chars)
       (setq head-point (point))
       (setq word (buffer-substring-no-properties head-point tail-point))
       (concat "\\b" word "\\b"))))
 
-(defun highlight-current-word ()
-  "highlight the word under cursor"
+;; highlight word at point
+;; bind to [f3]
+(defun highlight-word-at-point ()
+  "highlight the word at point"
   (interactive)
   (let (regexp-word color hi-colors)
-    (unless (boundp 'highlight-current-word)
-      (setq highlight-current-word 0))
-    (setq regexp-word (pick-current-regexp-word))
+    (unless (boundp 'highlight-word-at-point)
+      (setq highlight-word-at-point 0))
+    (setq regexp-word (regexp-word-at-point))
     (unhighlight-regexp regexp-word)
     (add-to-list 'regexp-search-ring regexp-word)
-    ;; only 4 highlight colors supported
+    ;; only 4 highlight colors supported now
     (setq hi-colors '("hi-yellow" "hi-pink" "hi-green" "hi-blue"))
     (setq color 
-	  (nth (% highlight-current-word (length hi-colors)) hi-colors))
+	  (nth (% highlight-word-at-point (length hi-colors)) hi-colors))
     (highlight-regexp regexp-word color)
-    (setq highlight-current-word (1+ highlight-current-word))))
-(global-set-key [f3] 'highlight-current-word)
+    (setq highlight-word-at-point (1+ highlight-word-at-point))))
+(global-set-key [f3] 'highlight-word-at-point)
 
 (defun unhighlight-all ()
   "unhighlight all highlighted words"
@@ -135,12 +137,12 @@
     (mapc (lambda (regex) (unhighlight-regexp regex))
 	(append regexp-history regexp-search-ring))))
 
-(defun unhighlight-current-word ()
-  "unhighlight the word under cursor"
+(defun unhighlight-word-at-point ()
+  "unhighlight the word at point"
   ;; in case of a lot of overlays
   (interactive)
   (dotimes (i 10)
-    (unhighlight-regexp (pick-current-regexp-word))))
+    (unhighlight-regexp (regexp-word-at-point))))
 
 (defun buffer-menu-friendly ()
   "show buffer menu friendly"
