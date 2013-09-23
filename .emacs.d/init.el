@@ -151,6 +151,28 @@
   (windmove-right)
   (buffer-menu))
 (global-set-key (kbd "\C-x \C-b") 'buffer-menu-friendly)
+
+(defun open-window-horizontally-friendly ()
+  "open a new window at right side and move into it"
+  (interactive)
+  (split-window-horizontally)
+  (windmove-right))
+  (global-set-key (kbd "\C-x 3") 'open-window-horizontally-friendly)
+  
+(defun open-window-vertically-friendly ()
+  "open a new widow at beneth side and move into it"
+  (interactive)
+  (split-window-vertically)
+  (windmove-down))
+(global-set-key (kbd "\C-x 2") 'open-window-vertically-friendly)
+
+(defun other-window-backward ()
+  "similar to other-window but backward"
+  (interactive)
+  (other-window -1))
+(global-set-key (kbd "M-n") 'other-window)
+(global-set-key (kbd "M-p") 'other-window-backward)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; useful functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; (point)
 ;; (region-beginning)
