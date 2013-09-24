@@ -234,3 +234,32 @@
 ;; (file-name-extension file-name)
 ;; (file-name-sans-extension file-name)
 
+
+
+(defun hao-pick-current-word ()                                                                                                                                                                                  
+  "pick current word under cursor"                                                                                                                                                                               
+  (save-excursion                                                                                                                                                                                                
+    (let (head-point tail-point word)                                                                                                                                                                            
+      (skip-chars-forward "-_A-Za-z0-9")                                                                                                                                                                         
+      (setq tail-point (point))                                                                                                                                                                                  
+      (skip-chars-backward "-_A-Za-z0-9")                                                                                                                                                                        
+      (setq head-point (point))                                                                                                                                                                                  
+      (buffer-substring-no-properties head-point tail-point))))
+
+(defun hao-find-erlang-pair ()                                                                                                                                                                                   
+  "find pair for if, case, begin"                                                                                                                                                                                
+  (interactive)                                                                                                                                                                                                  
+  (let ((keywords '("case" "if" "begin" "receive"  "fun"))                                                                                                                                                       
+        (num-of-passage 1))                                                                                                                                                                                      
+    (if (member (hao-pick-current-word) keywords)                                                                                                                                                                
+        (save-excursion                                                                                                                                                                                          
+          (setq num-of-passage                                                                                                                                                                                   
+                (count-matches                                                                                                                                                                                   
+                 "\\(^\\|[\\t =>]*\\)\\(case\\|if\\|begin\\|receive\\|fun[\\t ]*\\)[\\n\\t ]*"                                                                                                                   
+                 (point)                                                                                                                                                                                         
+                 (search-forward-regexp "\\(^end\\|[\\n\\t ]end[\\n\\t ,;.]\\)")))))                                                                                                                             
+    (while (> num-of-passage 0)                                                                                                                                                                                  
+      (progn (search-forward-regexp "[\\n\\t ]end[\\n\\t ,;.]")                                                                                                                                                  
+             (setq num-of-passage (1- num-of-passage)))))) 
+             
+
