@@ -82,6 +82,14 @@
 ;; enable hi-lock-mode
 ;; (global-hi-lock-mode 1)
 
+;; kernel style
+(add-hook 'c-mode-hook
+	  '(lambda ()
+	     (c-set-style "linux")
+	     ;;(c-set-offset 'case-label '+)
+	     (setq indent-tabs-mode nil)
+	     (setq c-basic-offset 4)))
+
 ;; just for fun
 (defun show-system-type ()
   "find out what OS Emacs is currently running on"
