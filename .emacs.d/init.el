@@ -1,3 +1,46 @@
+(defun hao-pick-current-word ()
+  "pick current word under cursor"
+  (save-excursion
+    (let (head-point tail-point word)
+      (skip-chars-forward "-_A-Za-z0-9")
+      (setq tail-point (point))
+      (skip-chars-backward "-_A-Za-z0-9")
+      (setq head-point (point))
+      (buffer-substring-no-properties head-point tail-point))))
+
+(defun hao-find-erlang-pair ()
+  "find pair for if, case, begin for Erlang mode"
+  (interactive)
+  (let ((keywords '("case" "if" "begin" "receive"  "fun"))
+        (num-of-passage 1)
+	(head-regexp "\\(^\\|[\s\t=>]\\)\\(case\\|if\\|begin\\|receive\\|fun[\s\t\n]*()[\s\t\n]*->\\)\\($\\|[\s\t]\\)")
+	(tail-regexp "\\(^\\|[\s\t,;.]\\)end\\($\\|[\s\t,;.]\\)")
+	(search-direction nil)
+	(jump-regex ""))
+    (if (member (hao-pick-current-word) keywords)
+        (progn
+	  (setq search-direction 'search-forward-regexp)
+	  (setq jump-regex tail-regexp)
+	  (save-excursion
+	    (setq num-of-passage
+		  (1+ (count-matches
+		       head-regexp
+		       (1+ (point))
+		       (search-forward-regexp tail-regexp)))))))
+    (if (equal (hao-pick-current-word) "end")
+	(progn
+	  (setq search-direction 'search-backward-regexp)
+	  (setq jump-regex head-regexp)
+	  (save-excursion
+          (setq num-of-passage
+                (1+ (count-matches
+		     tail-regexp
+		     (point)
+		     (search-backward-regexp head-regexp)))))))
+    (while (> num-of-passage 0)
+      (progn (funcall search-direction jump-regex)
+             (setq num-of-passage (1- num-of-passage))))))
+
 ;; Set Default mode
 (setq default-major-mode 'text-mode)
 
@@ -53,7 +96,6 @@
 (setq erlang-root-dir (concat otp-path "/lib/erlang"))
 (add-to-list 'exec-path (concat otp-path "/lib/erlang/bin"))
 (require 'erlang-start)
-(add-hook 'erlang-mode-hook 'erlang-font-lock-level-3)
 (add-hook 'erlang-mode-hook 
           (lambda ()
             (erlang-font-lock-level-3)
@@ -91,23 +133,23 @@
 	     (setq c-basic-offset 4)))
 
 ;; just for fun
-(defun show-system-type ()
+(defun hao-show-system-type ()
   "find out what OS Emacs is currently running on"
   (interactive)
   (message "%s" system-type))
 
-(defun show-emacs-major-version ()
+(defun hao-show-emacs-major-version ()
   "find out Emacs major version"
   (interactive)
   (message "%s" emacs-major-version))
 
-(defun show-features-loaded ()
+(defun hao-show-features-loaded ()
   "find out all features loaded"
   (interactive)
   (message "%S" features))
 
 ;; internal function
-(defun regexp-word-at-point ()
+(defun hao-regexp-word-at-point ()
   "pick current regexp word at point"
   (save-excursion
     (let (head-point tail-point word (skip-chars "-_A-Za-z0-9"))
@@ -120,24 +162,24 @@
 
 ;; highlight word at point
 ;; bind to [f3]
-(defun highlight-word-at-point ()
+(defun hao-highlight-word-at-point ()
   "highlight the word at point"
   (interactive)
   (let (regexp-word color hi-colors)
-    (unless (boundp 'highlight-word-at-point)
-      (setq highlight-word-at-point 0))
-    (setq regexp-word (regexp-word-at-point))
+    (unless (boundp 'hao-highlight-word-at-point)
+      (setq hao-highlight-word-at-point 0))
+    (setq regexp-word (hao-regexp-word-at-point))
     (unhighlight-regexp regexp-word)
     (add-to-list 'regexp-search-ring regexp-word)
     ;; only 4 highlight colors supported now
     (setq hi-colors '("hi-yellow" "hi-pink" "hi-green" "hi-blue"))
     (setq color 
-	  (nth (% highlight-word-at-point (length hi-colors)) hi-colors))
+	  (nth (% hao-highlight-word-at-point (length hi-colors)) hi-colors))
     (highlight-regexp regexp-word color)
-    (setq highlight-word-at-point (1+ highlight-word-at-point))))
-(global-set-key [f3] 'highlight-word-at-point)
+    (setq hao-highlight-word-at-point (1+ hao-highlight-word-at-point))))
+(global-set-key [f3] 'hao-highlight-word-at-point)
 
-(defun unhighlight-all ()
+(defun hao-unhighlight-all ()
   "unhighlight all highlighted words"
   (interactive)
   ;; in case of a lot of overlays
@@ -145,41 +187,41 @@
     (mapc (lambda (regex) (unhighlight-regexp regex))
 	(append regexp-history regexp-search-ring))))
 
-(defun unhighlight-word-at-point ()
+(defun hao-unhighlight-word-at-point ()
   "unhighlight the word at point"
   ;; in case of a lot of overlays
   (interactive)
   (dotimes (i 10)
-    (unhighlight-regexp (regexp-word-at-point))))
+    (unhighlight-regexp (hao-regexp-word-at-point))))
 
-(defun buffer-menu-friendly ()
+(defun hao-buffer-menu-friendly ()
   "show buffer menu friendly"
   (interactive)
   (split-window-horizontally)
   (windmove-right)
   (buffer-menu))
-(global-set-key (kbd "\C-x \C-b") 'buffer-menu-friendly)
+(global-set-key (kbd "\C-x \C-b") 'hao-buffer-menu-friendly)
 
-(defun open-window-horizontally-friendly ()
+(defun hao-open-window-horizontally-friendly ()
   "open a new window at right side and move into it"
   (interactive)
   (split-window-horizontally)
   (windmove-right))
-  (global-set-key (kbd "\C-x 3") 'open-window-horizontally-friendly)
+  (global-set-key (kbd "\C-x 3") 'hao-open-window-horizontally-friendly)
   
-(defun open-window-vertically-friendly ()
+(defun hao-open-window-vertically-friendly ()
   "open a new widow at beneth side and move into it"
   (interactive)
   (split-window-vertically)
   (windmove-down))
-(global-set-key (kbd "\C-x 2") 'open-window-vertically-friendly)
+(global-set-key (kbd "\C-x 2") 'hao-open-window-vertically-friendly)
 
-(defun other-window-backward ()
+(defun hao-other-window-backward ()
   "similar to other-window but backward"
   (interactive)
   (other-window -1))
 (global-set-key (kbd "M-n") 'other-window)
-(global-set-key (kbd "M-p") 'other-window-backward)
+(global-set-key (kbd "M-p") 'hao-other-window-backward)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; useful functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; (point)
@@ -242,32 +284,4 @@
 ;; (file-name-extension file-name)
 ;; (file-name-sans-extension file-name)
 
-
-
-(defun hao-pick-current-word ()                                                                                                                                                                                  
-  "pick current word under cursor"                                                                                                                                                                               
-  (save-excursion                                                                                                                                                                                                
-    (let (head-point tail-point word)                                                                                                                                                                            
-      (skip-chars-forward "-_A-Za-z0-9")                                                                                                                                                                         
-      (setq tail-point (point))                                                                                                                                                                                  
-      (skip-chars-backward "-_A-Za-z0-9")                                                                                                                                                                        
-      (setq head-point (point))                                                                                                                                                                                  
-      (buffer-substring-no-properties head-point tail-point))))
-
-(defun hao-find-erlang-pair ()                                                                                                                                                                                   
-  "find pair for if, case, begin"                                                                                                                                                                                
-  (interactive)                                                                                                                                                                                                  
-  (let ((keywords '("case" "if" "begin" "receive"  "fun"))                                                                                                                                                       
-        (num-of-passage 1))                                                                                                                                                                                      
-    (if (member (hao-pick-current-word) keywords)                                                                                                                                                                
-        (save-excursion                                                                                                                                                                                          
-          (setq num-of-passage                                                                                                                                                                                   
-                (count-matches                                                                                                                                                                                   
-                 "\\(^\\|[\\t =>]*\\)\\(case\\|if\\|begin\\|receive\\|fun[\\t ]*\\)[\\n\\t ]*"                                                                                                                   
-                 (point)                                                                                                                                                                                         
-                 (search-forward-regexp "\\(^end\\|[\\n\\t ]end[\\n\\t ,;.]\\)")))))                                                                                                                             
-    (while (> num-of-passage 0)                                                                                                                                                                                  
-      (progn (search-forward-regexp "[\\n\\t ]end[\\n\\t ,;.]")                                                                                                                                                  
-             (setq num-of-passage (1- num-of-passage)))))) 
-             
 
