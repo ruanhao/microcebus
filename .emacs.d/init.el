@@ -19,64 +19,44 @@
 	    (backward-char)))
 	nil))))
 
+(defun hao-erlang-pair-construct-stack (value old-stack)
+  (if (= 0 (+ value (car old-stack)))
+      (cdr old-stack)
+    (cons value old-stack)))
 
-(defun hao-erlang-pair-counterpart-point (direction regexp)
-  (interactive)
-  (save-excursion
-    (catch 'search-over
-      (while t
-	(condition-case nil
-	    (progn
-	      (funcall direction regexp)
-	      (unless (hao-erlang-pair-commentp)
-		(throw 'search-over (match-beginning 2))))
-	  (error (throw 'search-over nil)))))))
-
-(defun hao-erlang-pair-jump-steps (direction counterpart-regex self-regex)
-  (save-excursion
-    (let ((sum 1) (counterpart-point (hao-erlang-pair-counterpart-point direction counterpart-regex)))
-      (if (not counterpart-point)
-	  nil
-	(when (eq direction 'search-forward-regexp)
-	  (forward-char))
-	(catch 'jump-out
-	  (condition-case nil
-	      (progn
-	      (while (and (funcall direction self-regex)
-			  (if (eq direction 'search-forward-regexp)
-			      (<= (point) counterpart-point)
-			    (>= (point) counterpart-point)))
-		(unless (hao-erlang-pair-commentp)
-		  (setq sum (1+ sum))))
-	      sum)
-	    (error (throw 'jump-out sum))))))))
-
-(defun hao-erlang-pair-find (direction counterpart-regex self-regex)
-  (let ((times 0)
-	(total (hao-erlang-pair-jump-steps direction counterpart-regex self-regex))
-	(origin-point (point)))
+(defun hao-erlang-pair-find (direction stack origin-point)
+  (let ((new-stack nil))
     (condition-case nil
 	(progn
-	  (while (< times total)
-	    (funcall direction counterpart-regex)
-	    (unless (hao-erlang-pair-commentp)
-	      (setq times (1+ times))))
-	  (goto-char (match-beginning 2)))
+	  (funcall direction "\\(^\\|[\s\t=>]\\)\\(case\\|if\\|begin\\|receive\\|fun[\s\t\n]*(.*)[\s\t\n]*->\\|end\\)\\($\\|[\s\t,;.]\\)")
+	  (goto-char (match-beginning 2))
+	  (setq new-stack
+		(if (hao-erlang-pair-commentp)
+		    stack
+		  (if (looking-at "end")
+		      (hao-erlang-pair-construct-stack -1 stack)
+		    (hao-erlang-pair-construct-stack 1 stack))))
+	  (when new-stack
+	    (forward-char)		; a trick here, there is no need to use
+					; (backward-char) here when do backward-search,
+					; but you have to use (forward-char) when do forward-search
+	    (hao-erlang-pair-find direction new-stack origin-point)))
       (error (progn
-	       (message "Format is wrong")
-	       (goto-char origin-point))))))
+	      (message "Wrong format")
+	      (goto-char origin-point))))))
 
 (defun hao-erlang-pair ()
   "find pair for if, case, begin for Erlang mode"
   (interactive)
-  (let ((keywords '("case" "if" "begin" "receive" "fun"))
-	(head-regexp "\\(^\\|[\s\t=>]\\)\\(case\\|if\\|begin\\|receive\\|fun[\s\t\n]*()[\s\t\n]*->\\)\\($\\|[\s\t]\\)")
-	(tail-regexp "\\(^\\|[\s\t,;.]\\)\\(end\\)\\($\\|[\s\t,;.]\\)"))
+  (let ((keywords '("case" "if" "begin" "receive" "fun")))
     (if (member (hao-pick-current-word) keywords)
-	(hao-erlang-pair-find 'search-forward-regexp tail-regexp head-regexp)
+	(progn
+	  (forward-char)
+	  (hao-erlang-pair-find 'search-forward-regexp '(1) (point)))
       (if (equal (hao-pick-current-word) "end")
-	  (hao-erlang-pair-find 'search-backward-regexp head-regexp tail-regexp)))))
-
+	  (progn
+	    (backward-char)
+	    (hao-erlang-pair-find 'search-backward-regexp '(-1) (point)))))))
 
 ;; Set Default mode
 (setq default-major-mode 'text-mode)
@@ -135,6 +115,7 @@
 (require 'erlang-start)
 (add-hook 'erlang-mode-hook 
           (lambda ()
+	    (setq indent-tabs-mode nil)
             (erlang-font-lock-level-3)
 	    (modify-syntax-entry ?_ "w")
             ;; when starting an Erlang shell in Emacs, default in the node name
@@ -226,7 +207,7 @@
 
 (defun hao-unhighlight-word-at-point ()
   "unhighlight the word at point"
-  ;; in case of a lot of overlays
+  ;; in case of a lot of overlays 
   (interactive)
   (dotimes (i 10)
     (unhighlight-regexp (hao-regexp-word-at-point))))
@@ -259,66 +240,5 @@
   (other-window -1))
 (global-set-key (kbd "M-n") 'other-window)
 (global-set-key (kbd "M-p") 'hao-other-window-backward)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;; useful functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (point)
-;; (region-beginning)
-;; (region-end)
-;; (line-beginning-position)
-;; (line-end-position)
-;; (point-min)
-;; (point-max)
-;; 
-;; (goto-char 1)
-;; (forward-char 1)
-;; (backward-char 1)
-;; 
-;; ;; move cursor to the location of "string"
-;; ;; returns the new position
-;; (search-forward "string")		; end of "string"
-;; (search-backward "string")		; beginning of "string"
-;; (re-search-forward "string")
-;; (re-search-backward "string")
-;; ;; move cursor to the first char that's not "a to z"
-;; ;; returns the distance traveled
-;; (skip-chars-forward "a-z")
-;; (skip-chars-backward "a-z")
-;; 
-;; (delete-char 1)
-;; (delete-region start-pos end-pos)
-;; (insert "string")
-;; ;; get string from current buffer
-;; (buffer-substring-no-properties start-pos end-pos)
-;; (capitalize-region start-pos end-pos)
-;; 
-;; (length "string")
-;; (substring "string" start-index end-index)
-;; (replace-regexp-in-string regex replacement str)
-;; 
-;; (buffer-name)
-;; (buffer-file-name)
-;; ;; switch to other buffer
-;; ;; this function does not display the buffer in any window, 
-;; ;; so the user cannot necessarily see the buffer. 
-;; ;; but Lisp programs will now operate on it. 
-;; (set-buffer buffer-name)
-;; (save-buffer)
-;; (kill-buffer buffer-name)
-;; (kill-this-buffer)
-;; ;; temporarily sets a buffer as current to work with
-;; (with-current-buffer buffer-name
-;;   ;; do something here)
-;; 
-;; ;; insert file into current position
-;; (insert-file-contents file-path)
-;; ;; append a text block to file
-;; (append-to-file start-pos end-pos file-path)
-;; ;; get dir path
-;; (file-name-directory full-file-path)
-;; ;; get filename part
-;; (file-name-nondirectory full-file-path)
-;; ;; get filename's suffix
-;; (file-name-extension file-name)
-;; (file-name-sans-extension file-name)
 
 
