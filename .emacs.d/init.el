@@ -49,14 +49,15 @@
   "find pair for if, case, begin for Erlang mode"
   (interactive)
   (let ((keywords '("case" "if" "begin" "receive" "fun")))
-    (if (member (hao-pick-current-word) keywords)
-	(progn
-	  (forward-char)
-	  (hao-erlang-pair-find 'search-forward-regexp '(1) (point)))
-      (if (equal (hao-pick-current-word) "end")
+    (unless (hao-erlang-pair-commentp)
+      (if (member (hao-pick-current-word) keywords)
 	  (progn
-	    (backward-char)
-	    (hao-erlang-pair-find 'search-backward-regexp '(-1) (point)))))))
+	    (forward-char)
+	    (hao-erlang-pair-find 'search-forward-regexp '(1) (point)))
+	(if (equal (hao-pick-current-word) "end")
+	    (progn
+	      (backward-char)
+	      (hao-erlang-pair-find 'search-backward-regexp '(-1) (point))))))))
 
 ;; Set Default mode
 (setq default-major-mode 'text-mode)
