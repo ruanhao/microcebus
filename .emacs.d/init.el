@@ -8,38 +8,75 @@
       (setq head-point (point))
       (buffer-substring-no-properties head-point tail-point))))
 
-(defun hao-find-erlang-pair ()
+(defun hao-erlang-pair-commentp ()
+  (save-excursion
+    (let ((line-head-point (line-beginning-position)))
+      (backward-char)
+      (catch 'commented
+	(while (>= (point) line-head-point)
+	  (if (equal (char-after) ?%)
+	      (throw 'commented t)
+	    (backward-char)))
+	nil))))
+
+
+(defun hao-erlang-pair-counterpart-point (direction regexp)
+  (interactive)
+  (save-excursion
+    (catch 'search-over
+      (while t
+	(condition-case nil
+	    (progn
+	      (funcall direction regexp)
+	      (unless (hao-erlang-pair-commentp)
+		(throw 'search-over (match-beginning 2))))
+	  (error (throw 'search-over nil)))))))
+
+(defun hao-erlang-pair-jump-steps (direction counterpart-regex self-regex)
+  (save-excursion
+    (let ((sum 1) (counterpart-point (hao-erlang-pair-counterpart-point direction counterpart-regex)))
+      (if (not counterpart-point)
+	  nil
+	(when (eq direction 'search-forward-regexp)
+	  (forward-char))
+	(catch 'jump-out
+	  (condition-case nil
+	      (progn
+	      (while (and (funcall direction self-regex)
+			  (if (eq direction 'search-forward-regexp)
+			      (<= (point) counterpart-point)
+			    (>= (point) counterpart-point)))
+		(unless (hao-erlang-pair-commentp)
+		  (setq sum (1+ sum))))
+	      sum)
+	    (error (throw 'jump-out sum))))))))
+
+(defun hao-erlang-pair-find (direction counterpart-regex self-regex)
+  (let ((times 0)
+	(total (hao-erlang-pair-jump-steps direction counterpart-regex self-regex))
+	(origin-point (point)))
+    (condition-case nil
+	(progn
+	  (while (< times total)
+	    (funcall direction counterpart-regex)
+	    (unless (hao-erlang-pair-commentp)
+	      (setq times (1+ times))))
+	  (goto-char (match-beginning 2)))
+      (error (progn
+	       (message "Format is wrong")
+	       (goto-char origin-point))))))
+
+(defun hao-erlang-pair ()
   "find pair for if, case, begin for Erlang mode"
   (interactive)
-  (let ((keywords '("case" "if" "begin" "receive"  "fun"))
-        (num-of-passage 1)
+  (let ((keywords '("case" "if" "begin" "receive" "fun"))
 	(head-regexp "\\(^\\|[\s\t=>]\\)\\(case\\|if\\|begin\\|receive\\|fun[\s\t\n]*()[\s\t\n]*->\\)\\($\\|[\s\t]\\)")
-	(tail-regexp "\\(^\\|[\s\t,;.]\\)end\\($\\|[\s\t,;.]\\)")
-	(search-direction nil)
-	(jump-regex ""))
+	(tail-regexp "\\(^\\|[\s\t,;.]\\)\\(end\\)\\($\\|[\s\t,;.]\\)"))
     (if (member (hao-pick-current-word) keywords)
-        (progn
-	  (setq search-direction 'search-forward-regexp)
-	  (setq jump-regex tail-regexp)
-	  (save-excursion
-	    (setq num-of-passage
-		  (1+ (count-matches
-		       head-regexp
-		       (1+ (point))
-		       (search-forward-regexp tail-regexp)))))))
-    (if (equal (hao-pick-current-word) "end")
-	(progn
-	  (setq search-direction 'search-backward-regexp)
-	  (setq jump-regex head-regexp)
-	  (save-excursion
-          (setq num-of-passage
-                (1+ (count-matches
-		     tail-regexp
-		     (point)
-		     (search-backward-regexp head-regexp)))))))
-    (while (> num-of-passage 0)
-      (progn (funcall search-direction jump-regex)
-             (setq num-of-passage (1- num-of-passage))))))
+	(hao-erlang-pair-find 'search-forward-regexp tail-regexp head-regexp)
+      (if (equal (hao-pick-current-word) "end")
+	  (hao-erlang-pair-find 'search-backward-regexp head-regexp tail-regexp)))))
+
 
 ;; Set Default mode
 (setq default-major-mode 'text-mode)
