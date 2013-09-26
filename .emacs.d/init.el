@@ -159,7 +159,7 @@
         (error (progn
                  (message "Wrong format")
                  (goto-char origin-point)
-                 (throw 'ok t))))))))
+                 (throw 'ok t)))))))
 
 (defun hao-erlang-pair ()
   "find pair for if, case, begin for Erlang mode"
