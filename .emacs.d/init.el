@@ -1,157 +1,4 @@
-(defun hao-pick-current-word ()
-  "pick current word under cursor"
-  (save-excursion
-    (let (head-point tail-point word)
-      (skip-chars-forward "-_A-Za-z0-9")
-      (setq tail-point (point))
-      (skip-chars-backward "-_A-Za-z0-9")
-      (setq head-point (point))
-      (buffer-substring-no-properties head-point tail-point))))
-
-(defun hao-erlang-pair-commentp ()
-  (save-excursion
-    (let ((line-head-point (line-beginning-position)))
-      (backward-char)
-      (catch 'commented
-	(while (>= (point) line-head-point)
-	  (if (equal (char-after) ?%)
-	      (throw 'commented t)
-	    (backward-char)))
-	nil))))
-
-(defun hao-erlang-pair-construct-stack (value old-stack)
-  (if (= 0 (+ value (car old-stack)))
-      (cdr old-stack)
-    (cons value old-stack)))
-
-(defun hao-erlang-pair-find (direction stack origin-point)
-  (let ((new-stack nil))
-    (condition-case nil
-	(progn
-	  (funcall direction "\\(^\\|[\s\t=>]\\)\\(case\\|if\\|begin\\|receive\\|fun[\s\t\n]*(.*)[\s\t\n]*->\\|end\\)\\($\\|[\s\t,;.]\\)")
-	  (goto-char (match-beginning 2))
-	  (setq new-stack
-		(if (hao-erlang-pair-commentp)
-		    stack
-		  (if (looking-at "end")
-		      (hao-erlang-pair-construct-stack -1 stack)
-		    (hao-erlang-pair-construct-stack 1 stack))))
-	  (when new-stack
-	    (forward-char)		; a trick here, there is no need to use
-					; (backward-char) here when do backward-search,
-					; but you have to use (forward-char) when do forward-search
-	    (hao-erlang-pair-find direction new-stack origin-point)))
-      (error (progn
-	      (message "Wrong format")
-	      (goto-char origin-point))))))
-
-(defun hao-erlang-pair ()
-  "find pair for if, case, begin for Erlang mode"
-  (interactive)
-  (let ((keywords '("case" "if" "begin" "receive" "fun")))
-    (unless (hao-erlang-pair-commentp)
-      (if (member (hao-pick-current-word) keywords)
-	  (progn
-	    (forward-char)
-	    (hao-erlang-pair-find 'search-forward-regexp '(1) (point)))
-	(if (equal (hao-pick-current-word) "end")
-	    (progn
-	      (backward-char)
-	      (hao-erlang-pair-find 'search-backward-regexp '(-1) (point))))))))
-
-;; Set Default mode
-(setq default-major-mode 'text-mode)
-
-;; can't live without C-h
-(define-key key-translation-map [?\C-h] [?\C-?])
-
-;; molokai theme
-;; (add-to-list 'load-path "~/.emacs.d/themes/")
-;; (require 'molokai-theme)
-
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(load-theme 'molokai t)
-
-;; prevent Emacs from making backup files
-(setq backup-inhibited t)
-(setq auto-save-default nil)
-
-;; enable line and column numbering
-(line-number-mode t)
-(column-number-mode t)
-
-;; add line number
-(require 'linum)
-(global-linum-mode t)
-(defadvice linum-update-window (around linum-format-dynamic activate)
-  (let* ((w (length (number-to-string
-                     (count-lines (point-min) (point-max)))))
-         (linum-format (concat "%" (number-to-string w) "d ")))
-    ad-do-it))
-
-;; yes or no
-(fset 'yes-or-no-p 'y-or-n-p)
-
-;; no menu bar
-(menu-bar-mode -1)
-
-;; display time and system load
-(display-time)
-
-;; save place
-(require 'saveplace)
-(setq save-place t)
-
-(add-hook 'emacs-lisp-mode-hook
-	  (lambda ()
-	    (modify-syntax-entry ?- "w")))
-
-;; Emacs Erlang mode setup
-;; specify otp-path first
-(setq otp-path "/Users/ruan/Library/Erlang/otp16b01")
-(add-to-list 'load-path
-	     (car (file-expand-wildcards (concat otp-path "/lib/erlang/lib/tools-*/emacs"))))
-(setq erlang-root-dir (concat otp-path "/lib/erlang"))
-(add-to-list 'exec-path (concat otp-path "/lib/erlang/bin"))
-(require 'erlang-start)
-(add-hook 'erlang-mode-hook 
-          (lambda ()
-	    (setq indent-tabs-mode nil)
-            (erlang-font-lock-level-3)
-	    (modify-syntax-entry ?_ "w")
-            ;; when starting an Erlang shell in Emacs, default in the node name
-            (setq inferior-erlang-machine-options '("-sname" "emacs" "-setcookie" "emacs"))))
-(add-to-list 'auto-mode-alist '("\\.\\(erl\\|hrl\\|app\\|app.src\\)" . erlang-mode))
-
-
-;; distel setup (Emacs Erlang IDE)
-(add-to-list 'load-path "~/.emacs.d/bundle/distel/elisp")
-(require 'distel)
-(distel-setup)
-(setq derl-cookie "emacs")
-
-;; parenthesis pair utilities
-(show-paren-mode t)
-(add-to-list 'load-path "~/.emacs.d/bundle/autopair")
-(require 'autopair)
-(autopair-global-mode)
-
-;; scroll line by line
-(setq scroll-step 1)
-(setq scroll-conservatively 9999)
-
-;; enable hi-lock-mode
-;; (global-hi-lock-mode 1)
-
-;; kernel style
-(add-hook 'c-mode-hook
-	  '(lambda ()
-	     (c-set-style "linux")
-	     ;;(c-set-offset 'case-label '+)
-	     (setq indent-tabs-mode nil)
-	     (setq c-basic-offset 4)))
-
-;; just for fun
+;; hao-emacs
 (defun hao-show-system-type ()
   "find out what OS Emacs is currently running on"
   (interactive)
@@ -241,5 +88,183 @@
   (other-window -1))
 (global-set-key (kbd "M-n") 'other-window)
 (global-set-key (kbd "M-p") 'hao-other-window-backward)
+
+(defun hao-pick-current-word ()
+  "pick current word under cursor"
+  (save-excursion
+    (let (head-point tail-point word)
+      (skip-chars-forward "-_A-Za-z0-9")
+      (setq tail-point (point))
+      (skip-chars-backward "-_A-Za-z0-9")
+      (setq head-point (point))
+      (buffer-substring-no-properties head-point tail-point))))
+
+(defun hao-erlang-pair-commentp ()
+  (save-excursion
+    (let ((line-head-point (line-beginning-position)))
+      (backward-char)
+      (catch 'commented
+	(while (>= (point) line-head-point)
+	  (if (equal (char-after) ?%)
+	      (throw 'commented t)
+	    (backward-char)))
+	nil))))
+
+(defun hao-erlang-pair-construct-stack (value old-stack)
+  (if (= 0 (+ value (car old-stack)))
+      (cdr old-stack)
+    (cons value old-stack)))
+
+;; ;; i prefer this version, but Emacs Lisp does not optimize tail-recursion :(
+;; (defun hao-erlang-pair-find (direction stack origin-point)
+;;   (let ((new-stack nil))
+;;     (condition-case nil
+;; 	(progn
+;; 	  (funcall direction "\\(^\\|[\s\t=>]\\)\\(case\\|if\\|begin\\|receive\\|fun[\s\t\n]*(.*)[\s\t\n]*->\\|end\\)\\($\\|[\s\t,;.]\\)")
+;; 	  (goto-char (match-beginning 2))
+;; 	  (setq new-stack
+;; 		(if (hao-erlang-pair-commentp)
+;; 		    stack
+;; 		  (if (looking-at "end")
+;; 		      (hao-erlang-pair-construct-stack -1 stack)
+;; 		    (hao-erlang-pair-construct-stack 1 stack))))
+;; 	  (when new-stack
+;; 	    (forward-char)		; a trick here, there is no need to use
+;; 					; (backward-char) here when do backward-search,
+;; 					; but you have to use (forward-char) when do forward-search
+;; 	    (hao-erlang-pair-find direction new-stack origin-point)))
+;;       (error (progn
+;; 	      (message "Wrong format")
+;; 	      (goto-char origin-point))))))
+
+;; implementation with 'while'
+(defun hao-erlang-pair-find (direction stack origin-point)
+  (catch 'ok
+    (while t
+      (condition-case nil
+          (progn
+            (funcall direction "\\(^\\|[\s\t=>]\\)\\(case\\|if\\|begin\\|receive\\|fun[\s\t\n]*(.*)[\s\t\n]*->\\|end\\)\\($\\|[\s\t,;.]\\)")
+            (goto-char (match-beginning 2))
+            (setq stack
+                  (if (hao-erlang-pair-commentp)
+                      stack
+                    (if (looking-at "end")
+                        (hao-erlang-pair-construct-stack -1 stack)
+                      (hao-erlang-pair-construct-stack 1 stack))))
+            (if stack
+                (forward-char)          ; a trick here, there is no need to use
+                                        ; (backward-char) here when do backward-search,
+                                        ; but you have to use (forward-char) when do forward-search
+              (throw 'ok t)))
+        (error (progn
+                 (message "Wrong format")
+                 (goto-char origin-point)
+                 (throw 'ok t))))))))
+
+(defun hao-erlang-pair ()
+  "find pair for if, case, begin for Erlang mode"
+  (interactive)
+  (let ((keywords '("case" "if" "begin" "receive" "fun")))
+    (unless (hao-erlang-pair-commentp)
+      (if (member (hao-pick-current-word) keywords)
+	  (progn
+	    (forward-char)
+	    (hao-erlang-pair-find 'search-forward-regexp '(1) (point)))
+	(if (equal (hao-pick-current-word) "end")
+	    (progn
+	      (backward-char)
+	      (hao-erlang-pair-find 'search-backward-regexp '(-1) (point))))))))
+
+
+
+;; Set Default mode
+(setq default-major-mode 'text-mode)
+
+;; can't live without C-h
+(define-key key-translation-map [?\C-h] [?\C-?])
+
+;; molokai theme
+;; (add-to-list 'load-path "~/.emacs.d/themes/")
+;; (require 'molokai-theme)
+
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(load-theme 'molokai t)
+
+;; prevent Emacs from making backup files
+(setq backup-inhibited t)
+(setq auto-save-default nil)
+
+;; enable line and column numbering
+(line-number-mode t)
+(column-number-mode t)
+
+;; add line number
+(require 'linum)
+(global-linum-mode t)
+(defadvice linum-update-window (around linum-format-dynamic activate)
+  (let* ((w (length (number-to-string
+                     (count-lines (point-min) (point-max)))))
+         (linum-format (concat "%" (number-to-string w) "d ")))
+    ad-do-it))
+
+;; yes or no
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; no menu bar
+(menu-bar-mode -1)
+
+;; display time and system load
+(display-time)
+
+;; save place
+(require 'saveplace)
+(setq save-place t)
+
+(add-hook 'emacs-lisp-mode-hook
+	  (lambda ()
+	    (modify-syntax-entry ?- "w")
+	    (setq indent-tabs-mode nil)))
+
+;; Emacs Erlang mode setup
+;; specify otp-path first
+(setq otp-path "/Users/ruan/Library/Erlang/otp16b01")
+(add-to-list 'load-path
+	     (car (file-expand-wildcards (concat otp-path "/lib/erlang/lib/tools-*/emacs"))))
+(setq erlang-root-dir (concat otp-path "/lib/erlang"))
+(add-to-list 'exec-path (concat otp-path "/lib/erlang/bin"))
+(require 'erlang-start)
+(add-hook 'erlang-mode-hook 
+          (lambda ()
+	    (setq indent-tabs-mode nil)
+            (erlang-font-lock-level-3)
+	    (modify-syntax-entry ?_ "w")
+            ;; when starting an Erlang shell in Emacs, default in the node name
+            (setq inferior-erlang-machine-options '("-sname" "emacs" "-setcookie" "emacs"))))
+(add-to-list 'auto-mode-alist '("\\.\\(erl\\|hrl\\|app\\|app.src\\)" . erlang-mode))
+
+
+;; distel setup (Emacs Erlang IDE)
+(add-to-list 'load-path "~/.emacs.d/bundle/distel/elisp")
+(require 'distel)
+(distel-setup)
+(setq derl-cookie "emacs")
+
+;; parenthesis pair utilities
+(show-paren-mode t)
+(add-to-list 'load-path "~/.emacs.d/bundle/autopair")
+(require 'autopair)
+(autopair-global-mode)
+
+;; scroll line by line
+(setq scroll-step 1)
+(setq scroll-conservatively 9999)
+
+;; kernel style
+(add-hook 'c-mode-hook
+	  '(lambda ()
+	     (c-set-style "linux")
+	     ;;(c-set-offset 'case-label '+)
+	     (setq indent-tabs-mode nil)
+	     (setq c-basic-offset 4)))
 
 
