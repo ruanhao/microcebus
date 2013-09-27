@@ -1,6 +1,7 @@
 # Microcebus
 
-Microcebus is my workspace environment setup script. 
+Microcebus is my Vim environment setup script.  
+But i am now using Emacs :)  
 
 ## Installation
 
