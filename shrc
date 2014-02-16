@@ -1,0 +1,21 @@
+#
+# microcebus setup begin
+#
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export TERM=xterm-256color
+
+alias grep='grep --color=auto'
+alias ll='ls -lh'
+alias diff='diff -Naur'
+alias patch='patch -b'
+alias ec='emacs -nw'
+alias dirs='dirs -v'
+
+
+# bindkey \^U backward-kill-line
+
+#
+# microcebus setup end
+#
