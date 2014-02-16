@@ -3,11 +3,13 @@
 #
 
 [alias]
-    lg   = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
-    root = rev-parse --show-toplevel
+    lg   = ! git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -- | cat
+    rt = rev-parse --show-toplevel
     co   = checkout
     ci   = commit
-    st   = status
+    st   = status -sb
+    br   = branch
+    rb   = rebase
 
 [color]
     ui          = true
@@ -15,7 +17,7 @@
     branch      = auto
     diff        = auto
     interactive = auto
-    
+
 [diff]
         tool = ediff
         guitool = ediff

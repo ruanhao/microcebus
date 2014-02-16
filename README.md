@@ -1,9 +1,8 @@
-# Microcebus
+# microcebus
 
-Microcebus is my Vim environment setup script.  
-But i am now using Emacs :)  
+microcebus is my working environment setup script
+
 
 ## Installation
 
-    $ curl https://raw.github.com/ruanhao/microcebus/master/bootstrap.pl | perl
-    
+    $ curl https://raw.github.com/ruanhao/microcebus/master/bootstrap.sh | bash
