@@ -17,6 +17,10 @@ alias dirs='dirs -v'
 
 
 # bindkey \^U backward-kill-line
+# bindkey \^[ insert-last-word
+# bindkey \^P history-search-backward
+# bindkey \^N history-search-forward
+# bindkey \^W kill-region
 
 
 NORMAL="\033[0m"
