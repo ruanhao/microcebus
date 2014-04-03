@@ -16,6 +16,9 @@ alias ll='ls -lh'
 alias ec='emacs -nw'
 alias dirs='dirs -v'
 
+# echo '"\C-p": history-search-backward' >> ~/.inputrc
+# bind -f ~/.inputrc
+
 
 # bindkey \^U backward-kill-line
 # bindkey \^. insert-last-word
