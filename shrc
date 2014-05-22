@@ -63,6 +63,20 @@ function get_face() {
 
 export PS1="\[\$(pick_color)\]\$(get_face)\[$BLUE_BOLD\][\A]\[$GREEN_BOLD\]\u:\[$RED_BOLD\]\w\[$YELLOW_BOLD\]\$(parse_git_branch)\[$WHITE_BOLD\] > \[$NORMAL\]"
 
+function rm() {
+    local trashbin="$HOME/.Trash"
+    local args_arr=( $* )
+    local files=${args_arr[@]/#-*/}
+    if [[ -d $trashbin ]]; then
+        cp -- $files $trashbin
+    else
+        mkdir -p $trashbin
+        cp -- $files $trashbin
+    fi
+    /usr/bin/rm $*
+}
+
+
 #
 # microcebus setup end
 #
