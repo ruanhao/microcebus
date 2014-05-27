@@ -1,0 +1,28 @@
+MODKEY=Mod4
+
+export WMII_FONT='xft:Sans-9'
+WMII_NORMCOLORS='#000000 #f8f8f4 #f8f8f4'
+WMII_FOCUSCOLORS='#000000 #bbc5ff #000000'
+WMII_URGENTCOLORS='#eeeeee #bb6050 #dd8070'
+WMII_BACKGROUND='#ddeedd'
+
+
+# Custom status rbar
+status() {
+    wmiir rm $(wmiir ls /rbar | sed 's,^,/rbar/,') >/dev/null
+    user_cpu_status /rbar/1_user_cpu &
+}
+
+user_cpu_status() {
+    user_cpu_file=$1
+    while true; do
+        high_cpu=`ps -U $USER -o pcpu= \
+                  | awk '{SUM += $1} END {if(SUM > 99){print "HIGH CPU:",SUM}}'`
+        if [ -z "$high_cpu" ]; then
+            wmiir rm $user_cpu_file 2>/dev/null
+        else
+            echo "$WMII_URGENTCOLORS $high_cpu" | wmiir create $user_cpu_file
+        fi
+        sleep 30
+    done
+}
