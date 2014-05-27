@@ -1,24 +1,18 @@
 #! /bin/bash
-#
-# microcebus setup begin
-#
-
 
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM=xterm-256color
 
-
 alias grep='grep --color=auto --line-buffered'
 alias ll='ls -lh'
-# alias diff='diff -Naur'
-# alias patch='patch -b'
 alias ec='emacs -nw'
 alias dirs='dirs -v'
+# alias diff='diff -Naur'
+# alias patch='patch -b'
 
 # echo '"\C-p": history-search-backward' >> ~/.inputrc
 # bind -f ~/.inputrc
-
 
 # bindkey \^U backward-kill-line
 # bindkey \^. insert-last-word
@@ -60,23 +54,10 @@ function get_face() {
     cat /tmp/bash.face
 }
 
-
 export PS1="\[\$(pick_color)\]\$(get_face)\[$BLUE_BOLD\][\A]\[$GREEN_BOLD\]\u:\[$RED_BOLD\]\w\[$YELLOW_BOLD\]\$(parse_git_branch)\[$WHITE_BOLD\] > \[$NORMAL\]"
 
-function rm() {
-    local trashbin="$HOME/.Trash"
-    local args_arr=( $* )
-    local files=${args_arr[@]/#-*/}
-    if [[ -d $trashbin ]]; then
-        cp -- $files $trashbin
-    else
-        mkdir -p $trashbin
-        cp -- $files $trashbin
-    fi
-    /usr/bin/rm $*
-}
-
-
-#
-# microcebus setup end
-#
+if [[ -n $DISPLAY ]]; then
+    # Load the user's own X resource settings
+    [[ -r $HOME/.Xresources ]] && xrdb $HOME/.Xresources
+fi
+    
