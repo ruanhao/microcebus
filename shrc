@@ -8,6 +8,7 @@ alias grep='grep --color=auto --line-buffered'
 alias ll='ls -lh'
 alias ec='emacs -nw'
 alias dirs='dirs -v'
+alias gcc='gcc -lpthread'
 # alias diff='diff -Naur'
 # alias patch='patch -b'
 
@@ -55,6 +56,12 @@ function get_face() {
 }
 
 export PS1="\[\$(pick_color)\]\$(get_face)\[$BLUE_BOLD\][\A]\[$GREEN_BOLD\]\u:\[$RED_BOLD\]\w\[$YELLOW_BOLD\]\$(parse_git_branch)\[$WHITE_BOLD\] > \[$NORMAL\]"
+
+function setup_workspace() {
+    rm -rf hlib.h hlib.c >/dev/null 2>&1
+    sed -n '5,$p' ~/.emacs.d/yasnippet/snippets/c-mode/yas_hlib_header >hlib.h
+    sed -n '5,$p' ~/.emacs.d/yasnippet/snippets/c-mode/yas_hlib >hlib.c
+}
 
 if [[ -n $DISPLAY ]]; then
     # Load the user's own X resource settings
